@@ -1,5 +1,3 @@
-# cas_to_smiles.py
-
 """
 Author: Yan Pan
 Contact: yanpan@zohomail.com
@@ -16,12 +14,14 @@ Dependencies:
     - Python 3.x
     - pubchempy
     - pandas
+    - tqdm
 """
 
 import pubchempy as pcp  # Library to access PubChem database
 import pandas as pd      # Library for data manipulation and CSV handling
 import argparse          # Library for parsing command-line arguments
 import sys               # Library for system-specific parameters and functions
+from tqdm import tqdm    # Library for displaying progress bars
 
 def get_smiles_by_cas(cas_number):
     """
@@ -74,9 +74,10 @@ def process_csv(input_file, output_file, cas_column='CAS'):
         print(f"Error: Column '{cas_column}' not found in the input file.")
         sys.exit(1)
     
-    # Apply the get_smiles_by_cas function to each CAS number to create the SMILES column
+    # Apply the get_smiles_by_cas function to each CAS number with a progress bar
     print("Retrieving SMILES for each CAS number...")
-    df['SMILES'] = df[cas_column].apply(get_smiles_by_cas)
+    tqdm.pandas()  # Initialize tqdm for pandas apply
+    df['SMILES'] = df[cas_column].progress_apply(get_smiles_by_cas)
     
     try:
         # Write the updated DataFrame to the output CSV file
